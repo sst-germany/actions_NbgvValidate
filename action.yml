@@ -1,0 +1,106 @@
+name: 'NBGV Validate'
+description: 'Validates the state of NBGV GitVersioning.'
+
+inputs:
+  requiresTagName:
+    description: 'If not empty, the git TAG will be checked against this pattern.'
+    required: false
+    default: '' # no validation
+
+  requiresPublicRelease:
+    description: 'yes/no'
+    required: false
+    default: '' # no validation
+
+  requiresPrereleaseVersion:
+    description: 'yes/no'
+    required: false
+    default: '' # no validation
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install NBGV Action
+      uses: dotnet/nbgv@master
+      with:
+        setAllVars: true 
+
+    - name: Validate TAG name
+      shell: pwsh
+      run: |
+        Write-Host "(NBGV-TagName): Validating..."
+        if ( ${{ inputs.requiresTagName }} -eq "" ) 
+        {                                    
+          Write-Host "(NBGV-TagName): Validation skipped."
+        }
+        else
+        {
+          $githubRef = $env:GITHUB_REF
+          if (-not ($githubRef.StartsWith("refs/tags/"))) 
+          {
+            throw "(NBGV-TagName): Validation failed, reason: Not a TAG."
+          }
+          $tagName = $env:GITHUB_REF_NAME
+          if ($tagName -notlike "${{ inputs.requiresTagName }}") 
+          {
+             throw "(NBGV-TagName): Validation failed, reason: TAG does not match pattern. Requested(${{ inputs.requiresTagName }}), Found($tagName)."
+          }
+        }
+        
+    - name: Validate NBGV-PublicRelease
+      shell: pwsh
+      run: |
+        $publicRelease = $env:NBGV_PublicRelease
+        Write-Host "(NBGV-PublicRelease): Validating..."
+        if (${{ inputs.requiresPublicRelease }} -eq "") 
+        {
+          Write-Host "(NBGV-PublicRelease): Validation skipped."
+        }
+        elseif (${{ inputs.requiresPublicRelease }} -ieq "yes") 
+        {
+          if (-not ($publicRelease -ieq "True")) 
+          {
+            throw "(NBGV-PublicRelease): Validation failed, reason: PublicRelease expected but not detected."
+          } 
+          Write-Host "(NBGV-PublicRelease): Validation success: PublicRelease detected, that was expected."
+        }
+        elseif (${{ inputs.requiresPublicRelease }} -ieq "no") 
+        {
+          if (-not ($publicRelease -ieq "False")) {
+            throw "(NBGV-PublicRelease): Validation failed, reason: PublicRelease not expected but detected."
+          } 
+          Write-Host "(NBGV-PublicRelease): Validation success: PublicRelease not detected, that was expected."
+        }
+        else 
+        {
+          throw "(NBGV-PublicRelease): Validation failed, reason: Must be 'yes','no' or empty. Found(${{ inputs.requiresPublicRelease }})."
+        }
+
+    - name: Validate NBGV-PrereleaseVersion
+      shell: pwsh
+      run: |
+        $preRelease = $env:NBGV_PrereleaseVersion
+        Write-Host "(NBGV-PrereleaseVersion): Validating..."
+        if (${{ inputs.requiresPrereleaseVersion }} -eq "")
+        {
+          Write-Host "(NBGV-PrereleaseVersion): Validation skipped."
+        }
+        elseif (${{ inputs.requiresPrereleaseVersion }} -ieq "yes") 
+        {
+          if ($preRelease -eq "")
+          {
+            throw "(NBGV-PrereleaseVersion): Validation failed, reason: Prerelease expected but not detected."
+          }
+          Write-Host "(NBGV-PrereleaseVersion): Validation success: PreRelease detected ($preRelease), that was expected."
+        }
+        elseif (${{ inputs.requiresPrereleaseVersion }} -ieq "no") 
+        {
+          if ($preRelease -ne "") {
+            throw "(NBGV-PrereleaseVersion): Validation failed, reason: Prerelease not expected but detected."
+          }
+          Write-Host "(NBGV-PrereleaseVersion): Validation success: PreRelease not detected, that was expected."
+        } 
+        else 
+        {
+          throw "(NBGV-PrereleaseVersion): Validation failed, reason: Must be 'yes', 'no' or empty. Found(${{ inputs.requiresPrereleaseVersion }})"
+        }
