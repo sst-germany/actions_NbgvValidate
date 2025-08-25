@@ -7,6 +7,12 @@ inputs:
     required: false
     default: '' # no validation
 
+  # Only checked if "requiresTagName==yes".
+  requiredMatchedDigits:
+    description: 'Number of required digits that match the version number.'
+    required: false
+    default: '0' # no required match
+
   requiresPublicRelease:
     description: 'yes/no'
     required: false
@@ -16,6 +22,12 @@ inputs:
     description: 'yes/no'
     required: false
     default: '' # no validation
+
+  requiresTagVersionMatch:
+    description: 'yes/no'
+    required: false
+    default: '' # no validation
+
 
 runs:
   using: 'composite'
@@ -44,6 +56,40 @@ runs:
           if ($tagName -notlike "${{ inputs.requiresTagName }}") 
           {
              throw "(NBGV-TagName): Validation failed, reason: TAG does not match pattern. Requested(${{ inputs.requiresTagName }}), Found($tagName)."
+          }
+          
+          $rawValue = "${{ inputs.requiredMatchedDigits }}"
+          if (-not [int]::TryParse($rawValue, [ref]$requiredDigits)) 
+          {
+            throw "(NBGV-TagName): Input 'requiredMatchedDigits' is not a valid integer (Found: '$rawValue')."
+          }         
+          
+          #TODO: Implementiere, das geprüft wird ob die gewünschte Anzahl an Zahlengruppen der Versionsnummer aus NBGV identisch mit der in dem TAG angegebenen Nummer ist.
+          
+          # Prüfe, ob eine Versionsübereinstimmung verlangt wird
+          if ($requiredDigits -gt 0) 
+          {
+            $nbgvVersion = $env:NBGV_Version
+            Write-Host "(NBGV-TagName): Checking $requiredDigits digit group(s) match between NBGV version ($nbgvVersion) and tag ($tagName)."
+
+            # Nur die Zifferngruppen (z. B. 1.2.3 → [1,2,3])
+            $nbgvParts = ($nbgvVersion -split '[^0-9]+') | Where-Object { $_ -ne "" }
+            $tagParts  = ($tagName     -split '[^0-9]+') | Where-Object { $_ -ne "" }
+            
+            if ($nbgvParts.Count -lt $requiredDigits -or $tagParts.Count -lt $requiredDigits) 
+            {
+              throw "(NBGV-TagName): Validation failed, reason: Not enough numeric parts to compare. Required $requiredDigits, Found NBGV=$($nbgvParts.Count), Tag=$($tagParts.Count)."
+            }
+            
+            for ($i = 0; $i -lt $requiredDigits; $i++) 
+            {
+              if ($nbgvParts[$i] -ne $tagParts[$i]) 
+              {
+                throw "(NBGV-TagName): Validation failed, reason: Digit group $i does not match. NBGV=$($nbgvParts[$i]), Tag=$($tagParts[$i])."
+              }
+            }
+
+            Write-Host "(NBGV-TagName): Validation success: First $requiredDigits digit group(s) match."
           }
         }
         
