@@ -32,6 +32,15 @@ runs:
       with:
         setAllVars: true 
 
+    - name: Version.json exists
+      shell: pwsh
+      run: |
+        $nbgvVersionFileFound = $env:NBGV_VersionFileFound
+        if ( nbgvVersionFileFound -ne "True" ) 
+        {                                    
+          Write-Host "(NBGV-Version.JSON): File not found."
+        }
+
     - name: Validate TAG name
       shell: pwsh
       run: |
