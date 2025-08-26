@@ -95,11 +95,11 @@ runs:
       run: |
         $publicRelease = $env:NBGV_PublicRelease
         Write-Host "(NBGV-PublicRelease): Validating..."
-        if (${{ inputs.requiresPublicRelease }} -eq "") 
+        if ("${{ inputs.requiresPublicRelease }}" -eq "") 
         {
           Write-Host "(NBGV-PublicRelease): Validation skipped."
         }
-        elseif (${{ inputs.requiresPublicRelease }} -ieq "yes") 
+        elseif ("${{ inputs.requiresPublicRelease }}" -ieq "yes") 
         {
           if (-not ($publicRelease -ieq "True")) 
           {
@@ -107,7 +107,7 @@ runs:
           } 
           Write-Host "(NBGV-PublicRelease): Validation success: PublicRelease detected, that was expected."
         }
-        elseif (${{ inputs.requiresPublicRelease }} -ieq "no") 
+        elseif ("${{ inputs.requiresPublicRelease }}" -ieq "no") 
         {
           if (-not ($publicRelease -ieq "False")) {
             throw "(NBGV-PublicRelease): Validation failed, reason: PublicRelease not expected but detected."
@@ -124,11 +124,11 @@ runs:
       run: |
         $preRelease = $env:NBGV_PrereleaseVersion
         Write-Host "(NBGV-PrereleaseVersion): Validating..."
-        if (${{ inputs.requiresPrereleaseVersion }} -eq "")
+        if ("${{ inputs.requiresPrereleaseVersion }}" -eq "")
         {
           Write-Host "(NBGV-PrereleaseVersion): Validation skipped."
         }
-        elseif (${{ inputs.requiresPrereleaseVersion }} -ieq "yes") 
+        elseif ("${{ inputs.requiresPrereleaseVersion }}" -ieq "yes") 
         {
           if ($preRelease -eq "")
           {
@@ -136,7 +136,7 @@ runs:
           }
           Write-Host "(NBGV-PrereleaseVersion): Validation success: PreRelease detected ($preRelease), that was expected."
         }
-        elseif (${{ inputs.requiresPrereleaseVersion }} -ieq "no") 
+        elseif ("${{ inputs.requiresPrereleaseVersion }}" -ieq "no") 
         {
           if ($preRelease -ne "") {
             throw "(NBGV-PrereleaseVersion): Validation failed, reason: Prerelease not expected but detected."
