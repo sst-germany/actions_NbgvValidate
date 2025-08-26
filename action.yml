@@ -48,6 +48,7 @@ runs:
             throw "(NBGV-TagName): Validation failed, reason: Not a TAG."
           }
           $tagName = $env:GITHUB_REF_NAME
+          Write-Host "Detected TAG name: $tagName"
           if ($tagName -notlike "${{ inputs.requiresTagName }}") 
           {
              throw "(NBGV-TagName): Validation failed, reason: TAG does not match pattern. Requested(${{ inputs.requiresTagName }}), Found($tagName)."
@@ -79,7 +80,9 @@ runs:
             {
               if ($nbgvParts[$i] -ne $tagParts[$i]) 
               {
-                throw "(NBGV-TagName): Validation failed, reason: Digit group $i does not match. NBGV=$($nbgvParts[$i]), Tag=$($tagParts[$i])."
+                $i1 = $i+1
+                Write-Host "Group $i1 is not equal: NBGV=$($nbgvParts[$i]) != Tag=$($tagParts[$i])"
+                throw "(NBGV-TagName): Validation failed, reason: Group $i1 does not match. NBGV($nbgvVersion), TAG($tagName)."
               }
             }
 
