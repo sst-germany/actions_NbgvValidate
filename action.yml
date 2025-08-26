@@ -54,6 +54,7 @@ runs:
           }
           
           $rawValue = "${{ inputs.requiredMatchedDigits }}"
+          [int]$requiredDigits = 0   # Initialisierung notwendig
           if (-not [int]::TryParse($rawValue, [ref]$requiredDigits)) 
           {
             throw "(NBGV-TagName): Input 'requiredMatchedDigits' is not a valid integer (Found: '$rawValue')."
