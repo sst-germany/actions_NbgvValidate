@@ -36,7 +36,7 @@ runs:
       shell: pwsh
       run: |
         $nbgvVersionFileFound = $env:NBGV_VersionFileFound
-        if ( nbgvVersionFileFound -ne "True" ) 
+        if ( $nbgvVersionFileFound -ne "True" ) 
         {                                    
           Write-Host "(NBGV-Version.JSON): File not found."
         }
