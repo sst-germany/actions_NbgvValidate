@@ -36,7 +36,7 @@ runs:
       shell: pwsh
       run: |
         Write-Host "(NBGV-TagName): Validating..."
-        if ( ${{ inputs.requiresTagName }} -eq "" ) 
+        if ( "${{ inputs.requiresTagName }}" -eq "" ) 
         {                                    
           Write-Host "(NBGV-TagName): Validation skipped."
         }
