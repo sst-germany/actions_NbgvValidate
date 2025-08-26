@@ -23,11 +23,6 @@ inputs:
     required: false
     default: '' # no validation
 
-  requiresTagVersionMatch:
-    description: 'yes/no'
-    required: false
-    default: '' # no validation
-
 
 runs:
   using: 'composite'
@@ -63,8 +58,6 @@ runs:
           {
             throw "(NBGV-TagName): Input 'requiredMatchedDigits' is not a valid integer (Found: '$rawValue')."
           }         
-          
-          #TODO: Implementiere, das geprüft wird ob die gewünschte Anzahl an Zahlengruppen der Versionsnummer aus NBGV identisch mit der in dem TAG angegebenen Nummer ist.
           
           # Prüfe, ob eine Versionsübereinstimmung verlangt wird
           if ($requiredDigits -gt 0) 
