@@ -23,6 +23,10 @@ inputs:
     required: false
     default: '' # no validation
 
+  path:
+    description: 'The path to the directory for which the version should be determined. This should be at or below the directory containing the version.json file.'
+    required: false
+    default: '' # no validation
 
 runs:
   using: 'composite'
@@ -30,6 +34,7 @@ runs:
     - name: Install NBGV Action
       uses: dotnet/nbgv@master
       with:
+        path: "${{ inputs.requiresPublicRelease }}"
         setAllVars: true 
 
     - name: Version.json exists
