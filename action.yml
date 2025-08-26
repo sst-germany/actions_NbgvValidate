@@ -43,7 +43,7 @@ runs:
         $nbgvVersionFileFound = $env:NBGV_VersionFileFound
         if ( $nbgvVersionFileFound -ne "True" ) 
         {                                    
-          Write-Host "(NBGV-Version.JSON): File not found."
+          throw "(NBGV-Version.JSON): File not found."
         }
 
     - name: Validate TAG name
