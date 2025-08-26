@@ -34,7 +34,7 @@ runs:
     - name: Install NBGV Action
       uses: dotnet/nbgv@master
       with:
-        path: "${{ inputs.requiresPublicRelease }}"
+        path: "${{ inputs.path }}"
         setAllVars: true 
 
     - name: Version.json exists
